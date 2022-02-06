@@ -37,7 +37,7 @@ public class CourAuthorizationService {
     }
 
 
-    public ResponseEntity<CourEntity> getRegisterResponse(RegisterUserRequest request) {
+    public CourEntity getRegisterResponse(RegisterUserRequest request) {
 
         if (Objects.isNull(request.getPassword()) ||
                 Objects.isNull(request.getUsername())) {
@@ -71,7 +71,7 @@ public class CourAuthorizationService {
                 .build();
         userLoginRepository.save(userEntity);
 
-        return ResponseEntity.ok(userEntity);
+        return userEntity;
 
     }
 

@@ -4,10 +4,13 @@ package com.api.courierparcelservice.service;
 
 
 import com.api.courierparcelservice.domain.UserLoginRequest;
+import com.api.courierparcelservice.dto.MqDTO;
 import com.api.courierparcelservice.entity.CourEntity;
 import com.api.courierparcelservice.entity.Status;
 import com.api.courierparcelservice.exception.UserException;
 import com.api.courierparcelservice.security.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,29 +22,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
-
     private final JwtTokenProvider jwtTokenProvider;
-
     private final CourService courService;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    public AuthenticationService(AuthenticationManager authenticationManager,
-                                 JwtTokenProvider jwtTokenProvider,
-                                 CourService courService,
-                                 BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.courService = courService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    public ResponseEntity<CourEntity> getLoginResponse(UserLoginRequest requestDto) {
-        System.out.println("ok");
+    public MqDTO getLoginResponse(UserLoginRequest requestDto) {
         try {
             String username = requestDto.getUsername();
             CourEntity user = courService.getUserDataByUsernameAndPassword(requestDto);
@@ -56,13 +46,10 @@ public class AuthenticationService {
             System.out.println("authenticated");
 
             String token = jwtTokenProvider.createToken(user, user.getRoles());
-//            System.out.println(token);
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("Authorization", "Bearer_" + token);
-
-            return ResponseEntity.ok()
-                    .headers(httpHeaders)
-                    .body(user);
+            return MqDTO.builder()
+                    .token(token)
+                    .courEntity(user)
+                    .build();
         } catch (AuthenticationException e) {
             e.printStackTrace();
             throw new BadCredentialsException("Invalid username or password");
