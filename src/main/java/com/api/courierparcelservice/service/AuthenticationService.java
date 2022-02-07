@@ -3,7 +3,7 @@ package com.api.courierparcelservice.service;
 
 
 
-import com.api.courierparcelservice.domain.UserLoginRequest;
+import com.api.courierparcelservice.domain.CourLoginRequest;
 import com.api.courierparcelservice.dto.MqDTO;
 import com.api.courierparcelservice.entity.CourEntity;
 import com.api.courierparcelservice.entity.Status;
@@ -11,14 +11,10 @@ import com.api.courierparcelservice.exception.UserException;
 import com.api.courierparcelservice.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +27,7 @@ public class AuthenticationService {
     private final CourService courService;
 
 
-    public MqDTO getLoginResponse(UserLoginRequest requestDto) {
+    public MqDTO getLoginResponse(CourLoginRequest requestDto) {
         try {
             String username = requestDto.getUsername();
             CourEntity user = courService.getUserDataByUsernameAndPassword(requestDto);

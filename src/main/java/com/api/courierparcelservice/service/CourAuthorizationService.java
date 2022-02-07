@@ -2,7 +2,7 @@ package com.api.courierparcelservice.service;
 
 
 
-import com.api.courierparcelservice.domain.RegisterUserRequest;
+import com.api.courierparcelservice.domain.CourRegisterRequest;
 import com.api.courierparcelservice.entity.CourEntity;
 import com.api.courierparcelservice.entity.RoleEntity;
 import com.api.courierparcelservice.entity.Status;
@@ -10,7 +10,6 @@ import com.api.courierparcelservice.exception.UserException;
 import com.api.courierparcelservice.repository.CourRepository;
 import com.api.courierparcelservice.repository.RoleRepository;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ public class CourAuthorizationService {
     }
 
 
-    public CourEntity getRegisterResponse(RegisterUserRequest request) {
+    public CourEntity getRegisterResponse(CourRegisterRequest request) {
 
         if (Objects.isNull(request.getPassword()) ||
                 Objects.isNull(request.getUsername())) {

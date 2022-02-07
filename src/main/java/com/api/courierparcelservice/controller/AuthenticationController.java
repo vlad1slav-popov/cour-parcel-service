@@ -1,20 +1,15 @@
 package com.api.courierparcelservice.controller;
 
 
-
-
-
-import com.api.courierparcelservice.domain.RegisterUserRequest;
-import com.api.courierparcelservice.domain.UserLoginRequest;
+import com.api.courierparcelservice.domain.CourLoginRequest;
 import com.api.courierparcelservice.dto.MqDTO;
 import com.api.courierparcelservice.entity.CourEntity;
 import com.api.courierparcelservice.service.AuthenticationService;
-import com.api.courierparcelservice.service.CourAuthorizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,18 +21,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
-
+    private final JmsTemplate jmsTemplate;
 
     @PostMapping("/cour/login")
-    public ResponseEntity<CourEntity> login(@RequestBody UserLoginRequest requestDto) {
-        MqDTO loginResponse = authenticationService.getLoginResponse(requestDto);
+    public ResponseEntity<CourEntity> login(@RequestBody CourLoginRequest courLoginRequest) {
+        jmsTemplate.convertAndSend("requestqueue", courLoginRequest);
+
+        MqDTO mqDTO = (MqDTO) jmsTemplate
+                .receiveAndConvert("responsequeue");
+
+        CourEntity courEntity = mqDTO.getCourEntity();
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Basic " + loginResponse.getToken());
+        httpHeaders.add("Authorization", "Bearer " + mqDTO.getToken());
+
 
         return ResponseEntity.ok()
                 .headers(httpHeaders)
-                .body(loginResponse.getCourEntity());
+                .body(courEntity);
     }
 
 }

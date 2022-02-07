@@ -2,16 +2,17 @@ package com.api.courierparcelservice.service;
 
 
 import com.api.courierparcelservice.domain.LogoutRequest;
-import com.api.courierparcelservice.domain.UserLoginRequest;
+import com.api.courierparcelservice.domain.CourLoginRequest;
+import com.api.courierparcelservice.domain.LogoutResponse;
 import com.api.courierparcelservice.dto.OnUserLogoutSuccessEvent;
 import com.api.courierparcelservice.entity.CourEntity;
+import com.api.courierparcelservice.entity.RoleEntity;
 import com.api.courierparcelservice.exception.UserNotFoundException;
 import com.api.courierparcelservice.repository.CourRepository;
 import com.api.courierparcelservice.repository.RoleRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +29,10 @@ public class CourService {
     private final RoleRepository roleRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public List<CourEntity> getAllUsers() {
-        return courRepository.findAll();
+    public List<CourEntity> getAllCour() {
+        RoleEntity role_cour = roleRepository.findRoleByName("ROLE_COURIER");
+
+        return courRepository.findAllByRoles(role_cour);
     }
 
     public CourEntity getUserDataByUsername(String username) {
@@ -37,24 +40,26 @@ public class CourService {
                 .orElseThrow(() -> new UserNotFoundException("USER_NOT_FOUND"));
     }
 
-    public CourEntity getUserDataByUsernameAndPassword(UserLoginRequest userLoginRequest) {
+    public CourEntity getUserDataByUsernameAndPassword(CourLoginRequest courLoginRequest) {
         CourEntity userEntity = Optional.ofNullable(courRepository
-                        .findUserEntityByUsername(userLoginRequest.getUsername()))
+                        .findUserEntityByUsername(courLoginRequest.getUsername()))
                 .orElseThrow(() -> new UserNotFoundException("Courier with username: " +
-                        userLoginRequest.getUsername() + " not found"));
+                        courLoginRequest.getUsername() + " not found"));
 
-        if (passwordEncoder.matches(userLoginRequest.getPassword(), userEntity.getPassword())) {
+        if (passwordEncoder.matches(courLoginRequest.getPassword(), userEntity.getPassword())) {
             return userEntity;
         } else
             throw new UserNotFoundException("Wrong password");
     }
 
-    public ResponseEntity<String> logout(LogoutRequest request) {
+    public LogoutResponse logout(LogoutRequest request) {
         OnUserLogoutSuccessEvent logoutSuccessEvent = new OnUserLogoutSuccessEvent(
                 request.getUsername(), request.getToken(), request);
 //        logger.info("OnUserLogoutSuccessEvent: " + logoutSuccessEvent);
         applicationEventPublisher.publishEvent(logoutSuccessEvent);
-        return ResponseEntity.ok("User has successfully logged out from the system!");
+        return LogoutResponse.builder()
+                        .message("User has successfully logged out from the system!")
+                .build();
     }
 
 
