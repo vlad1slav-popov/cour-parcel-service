@@ -7,7 +7,7 @@ import com.api.courierparcelservice.domain.LogoutResponse;
 import com.api.courierparcelservice.dto.OnUserLogoutSuccessEvent;
 import com.api.courierparcelservice.entity.CourEntity;
 import com.api.courierparcelservice.entity.RoleEntity;
-import com.api.courierparcelservice.exception.UserNotFoundException;
+import com.api.courierparcelservice.exception.UserException;
 import com.api.courierparcelservice.repository.CourRepository;
 import com.api.courierparcelservice.repository.RoleRepository;
 import lombok.AllArgsConstructor;
@@ -37,19 +37,20 @@ public class CourService {
 
     public CourEntity getUserDataByUsername(String username) {
         return Optional.ofNullable(courRepository.findUserEntityByUsername(username))
-                .orElseThrow(() -> new UserNotFoundException("USER_NOT_FOUND"));
+                .orElseThrow(() -> new UserException("Courier with username: " +
+                        username + " not found", "005"));
     }
 
     public CourEntity getUserDataByUsernameAndPassword(CourLoginRequest courLoginRequest) {
         CourEntity userEntity = Optional.ofNullable(courRepository
                         .findUserEntityByUsername(courLoginRequest.getUsername()))
-                .orElseThrow(() -> new UserNotFoundException("Courier with username: " +
-                        courLoginRequest.getUsername() + " not found"));
+                .orElseThrow(() -> new UserException("Courier with username: " +
+                        courLoginRequest.getUsername() + " not found", "005"));
 
         if (passwordEncoder.matches(courLoginRequest.getPassword(), userEntity.getPassword())) {
             return userEntity;
         } else
-            throw new UserNotFoundException("Wrong password");
+            throw new UserException("Wrong password", "006");
     }
 
     public LogoutResponse logout(LogoutRequest request) {

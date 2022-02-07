@@ -2,11 +2,19 @@ package com.api.courierparcelservice.exception;
 
 public class UserException extends RuntimeException{
 
+    private String code;
+
     public UserException() {
         super();
     }
 
-    public UserException(String message) {
+    public UserException(String code,
+                         String message) {
         super(message);
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
     }
 }

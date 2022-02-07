@@ -45,12 +45,14 @@ public class ActiveMqListener {
         jmsTemplate.convertAndSend("responsequeue", courEntity);
     }
 
+    @JmsListener(destination = "requestqueue")
     public void getAllCour(String message) {
         log.info("message received: " + message);
         List<CourEntity> allCour = courService.getAllCour();
         jmsTemplate.convertAndSend("responsequeue", allCour);
     }
 
+    @JmsListener(destination = "requestqueue")
     public void logout(LogoutRequest request) {
         log.info("message received: " + request);
         LogoutResponse logoutResponse = courService.logout(request);

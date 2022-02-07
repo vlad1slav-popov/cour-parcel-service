@@ -4,7 +4,7 @@ package com.api.courierparcelservice.security;
 
 
 import com.api.courierparcelservice.entity.CourEntity;
-import com.api.courierparcelservice.exception.UserNotFoundException;
+import com.api.courierparcelservice.exception.UserException;
 import com.api.courierparcelservice.security.jwt.JwtUser;
 import com.api.courierparcelservice.security.jwt.JwtUserFactory;
 import com.api.courierparcelservice.service.CourService;
@@ -28,7 +28,8 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         CourEntity userEntity = Optional.ofNullable(courService.getUserDataByUsername(username))
-                .orElseThrow(() -> new UserNotFoundException("USER_NOT_FOUND"));
+                .orElseThrow(() -> new UserException("Courier with username: " +
+                        username + " not found", "005"));
 
         JwtUser jwtUser = JwtUserFactory.create(userEntity);
 
