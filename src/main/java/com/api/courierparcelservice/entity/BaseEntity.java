@@ -32,8 +32,10 @@ public class BaseEntity implements Serializable {
     private Date updated;
 
     @JsonProperty("err_code")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String errCode;
     @JsonProperty("err_description")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String errDescription;
 
 
