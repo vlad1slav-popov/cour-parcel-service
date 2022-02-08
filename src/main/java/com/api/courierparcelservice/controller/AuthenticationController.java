@@ -25,10 +25,10 @@ public class AuthenticationController {
 
     @PostMapping("/cour/login")
     public ResponseEntity<CourEntity> login(@RequestBody CourLoginRequest courLoginRequest) {
-        jmsTemplate.convertAndSend("requestqueue", courLoginRequest);
+        jmsTemplate.convertAndSend("cour-login-req-queue", courLoginRequest);
 
         MqDTO mqDTO = (MqDTO) jmsTemplate
-                .receiveAndConvert("responsequeue");
+                .receiveAndConvert("cour-login-resp-queue");
 
         CourEntity courEntity = mqDTO.getCourEntity();
         HttpHeaders httpHeaders = new HttpHeaders();

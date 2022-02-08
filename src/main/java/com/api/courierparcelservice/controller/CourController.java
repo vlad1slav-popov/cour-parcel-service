@@ -23,27 +23,27 @@ public class CourController {
     @Secured("ROLE_COURIER, ROLE_ADMIN")
     @PostMapping("cour/logout")
     public ResponseEntity<LogoutResponse> logout(@RequestBody LogoutRequest logoutRequest) {
-        jmsTemplate.convertAndSend("requestqueue", logoutRequest);
+        jmsTemplate.convertAndSend("cour-logout-req-queue", logoutRequest);
         return ResponseEntity.ok((LogoutResponse) jmsTemplate
-                .receiveAndConvert("responsequeue"));
+                .receiveAndConvert("cour-logout-res-queue"));
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping("cour/register")
     public ResponseEntity<CourEntity> register(@RequestBody CourRegisterRequest courRegisterRequest) {
 
-        jmsTemplate.convertAndSend("requestqueue", courRegisterRequest);
+        jmsTemplate.convertAndSend("cour-register-req-queue", courRegisterRequest);
         return ResponseEntity.ok((CourEntity) jmsTemplate
-                .receiveAndConvert("responsequeue"));
+                .receiveAndConvert("cour-register-res-queue"));
 
     }
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/cour/all")
     public ResponseEntity<List<CourEntity>> findAllCour() {
-        jmsTemplate.convertAndSend("requestqueue", "/cour/all");
+        jmsTemplate.convertAndSend("cour-findallcour-req-queue", "/cour/all");
         return ResponseEntity.ok((List<CourEntity>) jmsTemplate
-                .receiveAndConvert("responsequeue"));
+                .receiveAndConvert("cour-findallcour-res-queue"));
     }
 
 }
