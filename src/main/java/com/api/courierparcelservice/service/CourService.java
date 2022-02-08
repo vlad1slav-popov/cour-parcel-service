@@ -56,7 +56,6 @@ public class CourService {
     public LogoutResponse logout(LogoutRequest request) {
         OnUserLogoutSuccessEvent logoutSuccessEvent = new OnUserLogoutSuccessEvent(
                 request.getUsername(), request.getToken(), request);
-//        logger.info("OnUserLogoutSuccessEvent: " + logoutSuccessEvent);
         applicationEventPublisher.publishEvent(logoutSuccessEvent);
         return LogoutResponse.builder()
                         .message("User has successfully logged out from the system!")

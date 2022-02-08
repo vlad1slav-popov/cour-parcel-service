@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -39,6 +41,14 @@ public class ActiveMqListener {
             CourEntity entity = new CourEntity();
             entity.setErrCode(e.getCode());
             entity.setErrDescription(e.getMessage());
+            loginResponse.setCourEntity(entity);
+            jmsTemplate.convertAndSend("cour-login-res-queue", loginResponse);
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            MqDTO loginResponse = new MqDTO();
+            CourEntity entity = new CourEntity();
+            entity.setErrCode("100");
+            entity.setErrDescription("invalidusername of password");
             loginResponse.setCourEntity(entity);
             jmsTemplate.convertAndSend("cour-login-res-queue", loginResponse);
         }

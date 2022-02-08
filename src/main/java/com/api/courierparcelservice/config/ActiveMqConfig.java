@@ -1,7 +1,6 @@
 package com.api.courierparcelservice.config;
 
 
-import com.api.courierparcelservice.domain.ErrorResponse;
 import com.api.courierparcelservice.domain.CourRegisterRequest;
 import com.api.courierparcelservice.domain.CourLoginRequest;
 import com.api.courierparcelservice.domain.LogoutResponse;
@@ -29,7 +28,6 @@ public class ActiveMqConfig {
         typeIdMapping.put("roles", RoleEntity.class);
         typeIdMapping.put("mqDTO", MqDTO.class);
         typeIdMapping.put("courRegisterRequest", CourRegisterRequest.class);
-        typeIdMapping.put("errorResponse", ErrorResponse.class);
         typeIdMapping.put("logoutResponse", LogoutResponse.class);
         converter.setTypeIdMappings(typeIdMapping);
         return converter;

@@ -58,7 +58,6 @@ public class JwtTokenProvider {
         claims.put("roles", getRoleNames(roleEntities));
         claims.put("id", userEntity.getId());
         claims.put("password", userEntity.getPassword());
-//        claims.put("authorities", userEntity.getRoles());
         claims.put("status", userEntity.getStatus());
 
         Date now = new Date();
@@ -66,10 +65,6 @@ public class JwtTokenProvider {
 
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         Key key = Keys.hmacShaKeyFor(keyBytes);
-
-//        logger.info("key: " + Arrays.toString(key.getEncoded()));
-//
-//        logger.info("validity: " + validity.getTime());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -82,21 +77,11 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(
                 getUsername(token));
-        System.out.println("password: " + getPassword(token));
         return new UsernamePasswordAuthenticationToken(userDetails,
                 "",
                 userDetails.getAuthorities());
     }
 
-
-    public String getPassword(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("password", String.class);
-    }
 
 
     public String getUsername(String token) {
@@ -132,7 +117,6 @@ public class JwtTokenProvider {
             validateTokenIsNotForALoggedOutDevice(token);
             return true;
         } catch (JwtException | IllegalArgumentException | JwtAuthenticationException exception) {
-//            logger.error(exception.getMessage());
             return false;
         }
     }

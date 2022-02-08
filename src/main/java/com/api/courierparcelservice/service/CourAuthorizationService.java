@@ -10,6 +10,7 @@ import com.api.courierparcelservice.exception.UserException;
 import com.api.courierparcelservice.repository.CourRepository;
 import com.api.courierparcelservice.repository.RoleRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 
 @Service
+@Slf4j
 public class CourAuthorizationService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -53,12 +55,9 @@ public class CourAuthorizationService {
         }
 
         String encodedPass = bCryptPasswordEncoder.encode(request.getPassword());
-        RoleEntity user = roleRepository.findRoleByName("ROLE_COURIER");
-//        System.out.println(user);
-        System.out.println(user);
+        RoleEntity roleCourier = roleRepository.findRoleByName("ROLE_COURIER");
         List<RoleEntity> roleEntityList = new ArrayList<>();
-        roleEntityList.add(user);
-        System.out.println(roleEntityList);
+        roleEntityList.add(roleCourier);
 
 
 

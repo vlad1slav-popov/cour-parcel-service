@@ -28,28 +28,23 @@ public class AuthenticationService {
 
 
     public MqDTO getLoginResponse(CourLoginRequest requestDto) {
-        try {
-            String username = requestDto.getUsername();
-            CourEntity user = courService.getUserDataByUsernameAndPassword(requestDto);
-            System.out.println(user);
 
-            if (!user.getStatus().equals(Status.ACTIVE)) {
-                throw new UserException("COUR STATUS IS: " + user.getStatus(), "001");
+            String username = requestDto.getUsername();
+            CourEntity courEntity = courService.getUserDataByUsernameAndPassword(requestDto);
+
+            if (courEntity.getStatus().equals(Status.NOT_ACTIVE)) {
+                throw new UserException("COUR STATUS IS: " + courEntity.getStatus(), "001");
             }
 
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,
                    requestDto.getPassword()));
-            System.out.println("authenticated");
+            log.info("authenticated");
 
-            String token = jwtTokenProvider.createToken(user, user.getRoles());
+            String token = jwtTokenProvider.createToken(courEntity, courEntity.getRoles());
             return MqDTO.builder()
                     .token(token)
-                    .courEntity(user)
+                    .courEntity(courEntity)
                     .build();
-        } catch (AuthenticationException e) {
-            e.printStackTrace();
-            throw new BadCredentialsException("Invalid username or password");
-        }
     }
 
 
